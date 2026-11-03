@@ -17,8 +17,6 @@ jobs:
       - uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: '8.7'
-      - name: Extract Android project
-        run: unzip -o SpeakerSync.zip 'build.gradle.kts' 'settings.gradle.kts' 'gradle.properties' 'app/*' -d .
       - name: Build debug APK
         run: gradle assembleDebug
       - uses: actions/upload-artifact@v4
