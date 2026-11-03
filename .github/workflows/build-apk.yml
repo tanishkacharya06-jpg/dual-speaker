@@ -17,10 +17,12 @@ jobs:
       - uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: '8.7'
+      - name: Extract corrected source
+        run: unzip -o SpeakerSync_v2.zip -d .
       - name: Build debug APK
         run: gradle assembleDebug
       - uses: actions/upload-artifact@v4
         with:
-          name: SpeakerSync-apk
+          name: SpeakerSync-v2-apk
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
