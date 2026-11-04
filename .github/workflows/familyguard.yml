@@ -19,8 +19,30 @@ jobs:
           gradle-version: '8.5'
       - name: Extract FamilyGuard project
         run: unzip -o FamilyGuard.zip -d .
+      - name: Fix Kotlin recursive type inference in admin setup
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path("FamilyGuard/app/src/main/java/com/family/guard/AdminActivity.kt")
+          source = path.read_text()
+          old = '''    private fun setup() = Ui.passDialog(this, "Create admin passcode (min 4 characters)", {
+                  if (it.length >= 4) { Store.setAdminPass(this, it); enter() }
+                  else { Ui.toast(this, "Too short"); setup() }
+              }, { finish() })
+          '''
+          new = '''    private fun setup(): Unit {
+                  Ui.passDialog(this, "Create admin passcode (min 4 characters)", {
+                      if (it.length >= 4) { Store.setAdminPass(this, it); enter() }
+                      else { Ui.toast(this, "Too short"); setup() }
+                  }, { finish() })
+              }
+          '''
+          if old not in source:
+              raise SystemExit("Expected recursive setup() function was not found; refusing to patch a different source.")
+          path.write_text(source.replace(old, new, 1))
+          PY
       - name: Build installable release APK
-        run: gradle assembleRelease
+        run: gradle assembleRelease --stacktrace
         working-directory: FamilyGuard
       - uses: actions/upload-artifact@v4
         with:
