@@ -25,18 +25,8 @@ jobs:
           from pathlib import Path
           path = Path("FamilyGuard/app/src/main/java/com/family/guard/AdminActivity.kt")
           source = path.read_text()
-          old = '''    private fun setup() = Ui.passDialog(this, "Create admin passcode (min 4 characters)", {
-                  if (it.length >= 4) { Store.setAdminPass(this, it); enter() }
-                  else { Ui.toast(this, "Too short"); setup() }
-              }, { finish() })
-          '''
-          new = '''    private fun setup(): Unit {
-                  Ui.passDialog(this, "Create admin passcode (min 4 characters)", {
-                      if (it.length >= 4) { Store.setAdminPass(this, it); enter() }
-                      else { Ui.toast(this, "Too short"); setup() }
-                  }, { finish() })
-              }
-          '''
+          old = '    private fun setup() = Ui.passDialog(this, "Create admin passcode (min 4 characters)", {\n        if (it.length >= 4) { Store.setAdminPass(this, it); enter() }\n        else { Ui.toast(this, "Too short"); setup() }\n    }, { finish() })'
+          new = '    private fun setup(): Unit {\n        Ui.passDialog(this, "Create admin passcode (min 4 characters)", {\n            if (it.length >= 4) { Store.setAdminPass(this, it); enter() }\n            else { Ui.toast(this, "Too short"); setup() }\n        }, { finish() })\n    }'
           if old not in source:
               raise SystemExit("Expected recursive setup() function was not found; refusing to patch a different source.")
           path.write_text(source.replace(old, new, 1))
