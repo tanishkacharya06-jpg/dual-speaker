@@ -1,0 +1,1 @@
+Trigger AI Camera APK build on GitHub Actions.
